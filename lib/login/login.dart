@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:evently_task/utils/app_colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -31,6 +33,10 @@ class _LoginState extends State<Login> {
   late AppLocalizations l10n;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +65,7 @@ class _LoginState extends State<Login> {
                 SizedBox(height: 24),
                 buildOrRow(),
                 SizedBox(height: 24),
-                buildGoogleLogin2(),
+                buildGoogleLogin(),
                 SizedBox(height: 24),
                 buildLanguageToggle(),
                 SizedBox(height: 24),
@@ -135,7 +141,7 @@ class _LoginState extends State<Login> {
           Navigator.pop(context);
 
           ///Hide loadingx
-          Navigator.pushReplacement(context, 'onboardingScreen' as Route<Object?>);
+          Navigator.pushReplacement(context,AppRoutes.eventDetails);// 'onboardingScreen' as Route<Object?>);
           //Navigator.pushReplacement(context, AppRoutes.login);
         } on FirebaseAuthException catch (e) {
           var message =
@@ -164,96 +170,104 @@ class _LoginState extends State<Login> {
       );
 
   buildGoogleLogin() => ElevatedButton(
-        child: Text(l10n.loginWithGoogle),
-        onPressed: () {
-          Navigator.push(context, AppRoutes.eventDetails);
-        },
-        // text: ,
-        // icon: Icon(Icons.social_distance_outlined),
-        // onClick: () {},
-        // backgroundColor: AppColors.white,
-        // textColor: AppColors.blue,
-      );
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.white,
+      minimumSize: const Size(double.infinity, 50),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade400),
+      ),
+    ),
+    onPressed: () async {
+      final userCredential = await signInWithGoogle();
+      if (userCredential != null) {
+        User? user = userCredential.user;
 
-  buildGoogleLogin2() => InkWell(
-    //onTap: (){},
-    onTap: () async {
-      try {
-        showLoading(context);
-        final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-        if (googleUser == null) {
-          Navigator.pop(context);
-          return;
-        }
-
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
+        showMessage(context, content: "Signed in as ${user?.displayName}",
+          posButtonTitle: "OK",
+          onPosButtonClick: () {
+            Navigator.pushReplacement(context, AppRoutes.eventDetails);
+          },
         );
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-
-
-        UserDM.currentUser = await getFromUserFirestore(userCredential.user!.uid);
-        Navigator.pop(context);
-        Navigator.pushReplacementNamed(context, 'onboarding');
-      } catch (e) {
-        Navigator.pop(context);
-        showMessage(context, content: e.toString(), posButtonTitle: "OK");
       }
     },
-    child: Container(
-      width: double.infinity,
-      height: 50,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade400),
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(AppAssets.iconGoogle,
-            height: 24,
-            width: 24,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(AppAssets.iconGoogle, height: 24, width: 24),
+        const SizedBox(width: 12),
+        Text(
+          l10n.loginWithGoogle,
+          style: const TextStyle(
+            color: AppColors.blue,
+            fontWeight: FontWeight.w500,
           ),
-          SizedBox(width: 12),
-          Text(
-            l10n.loginWithGoogle,
-            style:TextStyle(color:AppColors.blue,fontWeight: FontWeight.w500),//(
-             // color: Colors.black,
-              //fontWeight: FontWeight.w600,
-            //),
-          )
-        ],
-      ),
+        ),
+      ],
     ),
   );
 
+  Future<UserCredential?> signInWithGoogle() async {
+    try {
+      showLoading(context);
+      await _googleSignIn.signOut();
+
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        Navigator.pop(context);
+        return null;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+      await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential = await _auth.signInWithCredential(credential);
+      Navigator.pop(context);
+      return userCredential;
+    } catch (e) {
+      Navigator.pop(context);
+      showMessage(
+        context,
+        content: "Google Sign-In failed. Please try again.",
+        posButtonTitle: "OK",
+      );
+      debugPrint("Google Sign-In error: $e");
+      return null;
+    }
+  }
 
   late LanguageProvider languageProvider;
 
   late ThemeProvider themeProvider;
 
   buildLanguageToggle() => AnimatedToggleSwitch<String>.dual(
-        current: languageProvider.currentLocale,
-        iconBuilder: (language) =>
-            Image.asset(language == "ar" ? AppAssets.icEg : AppAssets.icUsa),
-        first: "ar",
-        second: "en",
-        onChanged: (language) {
-          languageProvider.changeLanguage(language);
-        },
-      );
+    current: languageProvider.currentLocale,
+    iconBuilder: (language) =>
+        Image.asset(language == "ar" ? AppAssets.icEg : AppAssets.icUsa),
+    first: "ar",
+    second: "en",
+    onChanged: (language) {
+      languageProvider.changeLanguage(language);
+    },
+  );
 
   buildThemeToggle() => AnimatedToggleSwitch<ThemeMode>.dual(
-        current: themeProvider.mode,
-        iconBuilder: (mode) =>
-            Icon(mode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode),
-        first: ThemeMode.light,
-        second: ThemeMode.dark,
-        onChanged: (mode) {
-          themeProvider.changeMode(mode);
-        },
-      );
+    current: themeProvider.mode,
+    iconBuilder: (mode) =>
+        Icon(mode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode),
+    first: ThemeMode.light,
+    second: ThemeMode.dark,
+    onChanged: (mode) {
+      themeProvider.changeMode(mode);
+    },
+  );
+
+
+
+
 }

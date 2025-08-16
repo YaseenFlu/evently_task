@@ -1,7 +1,4 @@
-// import 'package:evently_c15/ui/screens/add_event/add_event.dart';
-// import 'package:evently_c15/ui/screens/home/home.dart';
-// import 'package:evently_c15/ui/screens/login/login.dart';
-// import 'package:evently_c15/ui/screens/register/register.dart';
+
 import 'package:evently_task/screens/events/editEvent.dart';
 import 'package:evently_task/screens/events/eventDetails.dart';
 import 'package:evently_task/screens/onboarding/onboardingScreen.dart';
@@ -28,5 +25,6 @@ static Route get eventDetails{
   static Route get editDetails{
     return MaterialPageRoute(builder: (_) => const EditEvent());
   }
+
 
 }

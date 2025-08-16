@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../model/category_dm.dart';
-import '../../utils/app_assets.dart';
 import '../../utils/app_colors.dart';
 import '../../widget/category_tabs.dart';
 

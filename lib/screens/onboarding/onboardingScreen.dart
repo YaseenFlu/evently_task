@@ -117,36 +117,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
           Positioned(
-            //bottom: 40,
-            left: 20,
-            top: 70,
+          //bottom: 40,
+          left: 20,
+          top: 70,
             child: Switch(
-              value: widget.isDarkMode,
-              onChanged: widget.toggleTheme,
-              activeColor: Theme.of(context).iconTheme.color,
+                  value: widget.isDarkMode,
+                  onChanged: widget.toggleTheme,
+                  activeColor: Theme.of(context).iconTheme.color,
             ),
           ),
-
-    // Positioned(
-    // //left: 90,
-    // top: 70,
-    // right: 20,
-    // child:ElevatedButton.icon(
-    // style: ElevatedButton.styleFrom(
-    // padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    // //backgroundColor: AppColors.blue,
-    // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-    // ),
-    // icon:Icon(Icons.login, color:Theme.of(context).iconTheme.color),
-    // label:Text(
-    // 'login',
-    // style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
-    // ),
-    // onPressed: () {
-    // Navigator.push(context, AppRoutes.login);
-    // },
-    // ),
-    // ),
+          // Positioned(
+          //   //bottom: 40,
+          //   //left: 20,
+          //   top: 70,
+          //  right: 20,
+          //  child: ElevatedButton.icon(
+          //         style: ElevatedButton.styleFrom(
+          //         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          //           //backgroundColor: AppColors.blue,
+          //           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          //         ),
+          //         //icon:Icon(Icons.check_circle_outline, color:Theme.of(context).iconTheme.color),
+          //           label:Text(
+          //              'Event Detail',
+          //               style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+          //           ),
+          //           onPressed: () {
+          //           Navigator.push(context,AppRoutes.eventDetails);
+          //     },
+          //     ),
+          // ),
         ],
       )
     );

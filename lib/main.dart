@@ -1,5 +1,4 @@
 
-import 'package:evently_task/login/login.dart';
 import 'package:evently_task/providers/language_provider.dart';
 import 'package:evently_task/providers/theme_provider.dart';
 import 'package:evently_task/screens/onboarding/onboardingScreen.dart';
@@ -16,11 +15,11 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: FirebaseOptions(
-        apiKey: "AIzaSyBir_qd6FDZPLZnOQi6tN1C0TNadr3VbgY",
-        appId: "1:132585537654:android:3df09b57eec8e74a5e9f57",
-        messagingSenderId: "132585537654",
+        apiKey: "AIzaSyCVCT9dQJ16Ag2Lr93rqr8P_s_FzA-wiQo",
+        appId: "1:688736515862:android:6a8da516be3a249a278237",
+        messagingSenderId: "688736515862",//"132585537654",
         //messagingSenderId: "",
-        projectId: "evently-task"),
+        projectId: "eventlytask"),
   );
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => ThemeProvider()),
